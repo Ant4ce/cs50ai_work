@@ -6,7 +6,6 @@ from sklearn.neighbors import KNeighborsClassifier
 
 TEST_SIZE = 0.4
 
-model = KNeighborsClassifier(n_neighbors= 1)
 
 
 def main():
@@ -70,25 +69,41 @@ def load_data(filename):
         int_columns = [0,2,4,11,12,13,14]
         float_colums = [1,3,5,6,7,8,9]
         num = 0
+        first_ele = 0
         for row in shopping_reader:
-            while num < 18:
+            if first_ele == 0:
+                first_ele = 1
+                continue
+            while num < 17:
                 if num in int_columns:
                     row_evidence.append(int(row[num]))
                 if num in float_colums:
                     row_evidence.append(float(row[num]))
                 if num == 10:
                     row_evidence.append(month_to_num(row[num]))
-                if num == 16:
+                    if month_to_num(row[num]) not in [0,1,2,3,4,5,6,7,8,9,10,11]:
+                        print("error found in months")
+                        break
+                if num == 15:
                     row_evidence.append(visit_type(row[num]))
-                if num == 17:
+                    if visit_type(row[num]) not in [0,1]:
+                        print("error found in visit_type")
+                        print(visit_type(row[num]))
+                        break
+                if num == 16:
                     row_evidence.append(weekend_revenue_num(row[num]))
+                    if weekend_revenue_num(row[num]) not in [0,1]:
+                        print("error found in weekend_revenue_num")
+                        break
                 num += 1
 
-            labels_list.append(weekend_revenue_num(row[18]))
+            labels_list.append(int(weekend_revenue_num(row[17])))
             evidence_lists.append(row_evidence)
+            num = 0
             row_evidence = []
 
-    tuple_return = (evidence_lists, labels_list)
+
+    return evidence_lists, labels_list 
 
 
 def weekend_revenue_num(number):
@@ -97,36 +112,25 @@ def weekend_revenue_num(number):
     
 def month_to_num(month):
     calendar = {"Jan":0, "Feb":1, "Mar":2, "Apr":3, "May":4, "June":5, "Jul":6, "Aug":7, "Sep":8, "Oct":9, "Nov":10, "Dec":11}
-        
     return calendar.get(month)
 
 def visit_type(visit):
     
-    visit_return = {"Returning_Visitor": 1, "New_Visitor": 0}
-
-    return visit_return.get(visit)
+    if visit == "Returning_Visitor":
+        return 1
+    else:
+        return 0
 
 def train_model(evidence, labels):
     """
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    holdout = int(0.5 * len(evidence))
+    model = KNeighborsClassifier(n_neighbors= 1)
+    model.fit(evidence, labels)
+
+    return model
     
-    training_set = evidence[:holdout]
-    training_setY = labels[:holdout]
-
-    testing_set = evidence[holdout:]
-    testing_setY = labels[holdout:]
-
-    x_training = [row for row in training_set]
-    y_training = [row for row in training_setY]
-    model.fit(x_training, y_training)
-    
-    x_testing = [row for row in testing_set]
-    y_testing = [row for row in testing_setY]
-    predictions_model = model.predict(x_testing) 
-
 
 def evaluate(labels, predictions):
     """
@@ -143,7 +147,23 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    total_pos = 0
+    predicted_pos = 0 
+    total_neg = 0
+    predicted_neg = 0
+
+    for a, b in zip(labels, predictions):
+        if a == 1:
+            total_pos += 1
+            if a == b:
+                predicted_pos += 1
+        else:
+            total_neg += 1
+            if a == b :
+                predicted_neg += 1
+
+        
+    return (predicted_pos/total_pos, predicted_neg/total_neg)
 
 
 if __name__ == "__main__":
