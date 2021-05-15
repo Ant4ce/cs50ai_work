@@ -100,15 +100,18 @@ def shortest_path(source, target):
     movie_people_seen = []
     action_start= 0
 
+    #adding nodes to the queue to loop over.
     for every in neighbours_for_x:
         current_node = Node(state=every, parent=("",source),action= action_start)
         frontier.add(current_node)
 
 
+    #loop until we have found a link otherwise return none if the queue is empty.   
     while True: 
         if frontier.empty():
             return None
 
+        #getting item from queue, adding the removed item to list of seen nodes.
         node = frontier.remove()
         node_hist.append((node.state[0],node.state[1],node.parent[0],node.parent[1]))
         movie_people_seen.append((node.state[0],node.state[1]))
@@ -117,6 +120,7 @@ def shortest_path(source, target):
             print("link found")
             node_list.append(node.state)
 
+            #creating the list of nodes we passed through from source to get to the target.
             for every in node_hist:
                 if every[0] == node.parent[0] and every[1] == node.parent[1]:
                     node_list.append((every[0], every[1]))
@@ -124,12 +128,15 @@ def shortest_path(source, target):
                     if every[3] == source:
                         break
                         
+            #returning the list.
             return node_list[::-1]
 
         node_neighbours = neighbors_for_person(node.state[1])
 
+        #looping over neighbours if we didn't find a connection to the target yet.
         for every in node_neighbours:
             if every not in movie_people_seen:
+                #keeping track of the depth of our search.
                 action_new_number = node.action + 1 
                 node_current = Node(state = every, parent= node.state, action= action_new_number)
                 frontier.add(node_current)

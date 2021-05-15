@@ -101,6 +101,7 @@ class CrosswordCreator():
         """
         for variable in self.crossword.variables:
             words_for_removal = set()
+            #checking if the word is the same length as the variable length and if not add it to the list for removal.
             for word in self.domains[variable]:
                 if len(word) != variable.length:
                     words_for_removal.add(word)
@@ -126,12 +127,9 @@ class CrosswordCreator():
                 if all(other_words[crossover[1]] != word[crossover[0]] for other_words in self.domains[y]):
                     words_for_removal.add(word)
                     bool_return = True
-            #print("before removal: ")
-            #print(words_for_removal)
-            #print(self.domains[x])
+            #removing the difference between the words_for_removal and the domain of x.
+            #we keep only the words that are arc consistent
             self.domains[x] = self.domains[x].difference(words_for_removal)
-            #print("after removal: ")
-            #print(self.domains[x])
 
         return bool_return
 
@@ -149,6 +147,7 @@ class CrosswordCreator():
         if arcs is None:
             list_queue = []
             for variable in self.crossword.variables:
+                #creating queue to check the variables for when arcs is empty 
                 for other_var in self.crossword.variables:
                     if variable == other_var:
                         continue
@@ -158,14 +157,21 @@ class CrosswordCreator():
                     list_queue.append((variable, other_var))
 
 
+        #start looping over the queue until it is empty
         while list_queue != []:
 
+            #checking the first element of the queue
             current_arc = list_queue.pop(0)
-            #print(current_arc)
             if self.revise(current_arc[0], current_arc[1]):
+                #returning false if the domain of one of the variables is empty
+                #so there was no word that could fit in the variable that was also
+                #arc consistent.
                 if len(self.domains[current_arc[0]]) == 0:
                     return False
+                #adding new sets to check for arc consistency
                 neighboring_set = self.crossword.neighbors(current_arc[0])
+                #removing the current_arc[1] because it was the set we just tested
+                # so we remove it to make sure we don't check it again.
                 neighboring_set.remove(current_arc[1])
                 for every in neighboring_set:
                     list_queue.append((every, current_arc[0]))
@@ -195,19 +201,26 @@ class CrosswordCreator():
         """
         
         for variable, word in assignment.items():
+            #cheking if word doesn't fit, if so return false
             if variable.length != len(word):
                 return False
             for other_var, word_other in assignment.items():
+                #checking we don't look at the same variable as above, skiping it.
                 if variable == other_var:
                     continue
-                if  word == word_other:
+                #if the same word is in the previous variable and it didn't return false,
+                #then the same word can't be used again and so we return false.
+                if word == word_other:
                     return False
 
                 crossover = self.crossword.overlaps[variable, other_var] 
                 if crossover:
                     x, y = crossover
+                    #checking if the letters in the words are the same at crossover
+                    #location(checking for conflicts), if not returning false.
                     if word[x] != word_other[y]:
                         return False
+
         return True
 
 
@@ -229,9 +242,11 @@ class CrosswordCreator():
                 if crossover is None:
                     continue
                 for other_word in self.domains[variable]:
+                    #if it rules out a word we increase its value by 1.
                     if word[crossover[0]] != other_word[crossover[1]]:
                         word_dict[word] += 1
 
+        #sorted in increasing order
         sorted_word_list = sorted(word_dict, key=word_dict.get )
 
         return sorted_word_list
@@ -248,18 +263,26 @@ class CrosswordCreator():
         my_dict_neighbours = {}
         for variable in self.crossword.variables:
             if variable not in assignment:
+                #creating dictionarys of the variable and the sizes of their domains
+                # also making one for the amount of neighbours.
                 my_dict_words.update({variable: len(self.domains[variable])})
                 my_dict_neighbours.update({variable: len(self.crossword.neighbors(variable))})
 
+        #sorting the dictionarys by domain size and number of neighbours.
         sorted_variables = sorted(my_dict_words, key=my_dict_words.get) 
         sorted_neighbours = sorted(my_dict_neighbours, key= my_dict_neighbours.get)
+        #making sure there is more than one thing to choose from in the dict.
         if len(my_dict_words) > 1: 
+            #in case of tie in domain sizes
             if my_dict_words[sorted_variables[0]] == my_dict_words[sorted_variables[1]]:
+                #in case of tie again choose the first one.   
                 if my_dict_neighbours[sorted_variables[0]] == my_dict_neighbours[sorted_variables[1]]:
-                    return sorted_neighbours[0]
-                
-                if my_dict_neighbours[sorted_variables[0]] < my_dict_neighbours[sorted_variables[0]]:
-                    return sorted_neighbours[1]
+                    return sorted_variables[0]
+                #in case second has larger degree, return it, else just return first one.
+                if my_dict_neighbours[sorted_variables[0]] < my_dict_neighbours[sorted_variables[1]]:
+                    return sorted_variables[1]
+                else:
+                    return sorted_variables[0]
 
         return sorted_variables[0]
         
@@ -273,6 +296,7 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
+        #the break condition
         if self.assignment_complete( assignment):
             return assignment
 

@@ -66,6 +66,7 @@ def load_data(filename):
     with open(filename) as csv_file:
         shopping_reader = csv.reader(csv_file)
         row_evidence = []
+        #organising the columns by data type.
         int_columns = [0,2,4,11,12,13,14]
         float_colums = [1,3,5,6,7,8,9]
         num = 0
@@ -88,7 +89,6 @@ def load_data(filename):
                     row_evidence.append(visit_type(row[num]))
                     if visit_type(row[num]) not in [0,1]:
                         print("error found in visit_type")
-                        print(visit_type(row[num]))
                         break
                 if num == 16:
                     row_evidence.append(weekend_revenue_num(row[num]))
@@ -147,6 +147,7 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
+    #tallying the number of correct predictions and finding the percentage of accurately identified ones from the total.
     total_pos = 0
     predicted_pos = 0 
     total_neg = 0

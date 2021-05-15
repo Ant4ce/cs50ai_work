@@ -131,13 +131,13 @@ def top_files(query, files, idfs, n):
                     counter += 1
             
             query_tf_idfs.append(idfs[word] * counter)
-            #counter = 0
         
         n_files[the_file] = sum(query_tf_idfs)
-        #query_tf_idfs = []
 
+    #returning in reverse order so top results are the first in the list.
     n_sorted = sorted(n_files.items(), key= lambda x: x[1], reverse = True)
 
+    #keeping only the filenames information.
     return_list = [i[0] for i in n_sorted] 
 
     return return_list[:n]
@@ -168,7 +168,9 @@ def top_sentences(query, sentences, idfs, n):
 
         n_sent[sentence] = [sum(query_idfs), counter/len(words_sent)]
 
+    #returning in reverse order so top results are the first in the list.
     n_sorted_sent = sorted(n_sent.items(), key = lambda x: (x[1][0],x[1][1]), reverse = True) 
+    #keeping only the sentences information.
     return_list = [i[0] for i in n_sorted_sent]
     
     return return_list[:n]

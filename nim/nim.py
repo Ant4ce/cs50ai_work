@@ -158,30 +158,6 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        #highest_q = self.best_future_reward( state)
-        #set_actions = Nim.available_actions(state)
-        #
-        #if epsilon == False:
-        #    for key, value in self.q.items():
-        #        if value == highest_q:
-        #            return key
-        #    return "something went wrond in epsilon false"
-        #elif epsilon == True:
-        #    decision = ["greedy", "epsilon"]
-        #    odds = [1 - self.epsilon, self.epsilon]
-        #    path = random.choices(decision, weights= odds, k=1)
-        #    print(type(path))
-
-        #    if path == "greedy":
-        #        for key, value in self.q.items():
-        #            if value == highest_q:
-        #                return key
-        #        return "something went wrond in epsilon true"
-        #    else:
-        #        choice_list = random.sample(set_actions, 1)
-
-
-
         set_actions = Nim.available_actions(state)
 
         if epsilon == False:
@@ -195,6 +171,7 @@ class NimAI():
         elif epsilon == True:
             decision = ["greedy", "epsilon"]
             odds = [1 - self.epsilon, self.epsilon]
+            #picking random variable since epsilon is true.
             path = random.choices(decision, weights= odds, k=1)
             if path == "greedy":
                 action_q = (None,0)
@@ -206,8 +183,6 @@ class NimAI():
             else:
                 choice_list = random.sample(set_actions, 1)
                 return choice_list[0] 
-
-            
 
 
 def train(n):

@@ -32,6 +32,7 @@ def player(board):
             if each == "O":
                 o_count += 1
 
+    #using remainder to find out which player gets to play next.
     if (x_count + o_count)%2 != 0:
         return O
     if (x_count + o_count)%2 != 1:
@@ -124,6 +125,8 @@ def minimax(board):
         return None
     
     if player(board) == X:
+        #start off with a value of -2 to make sure any action is better than it so we look for best action. 
+        #same is true bellow for when O plays except with a positive number.
         v = [-2,(-1,-1)]
         for every in actions(board):
             if minma(result(board, every)) > v[0]:

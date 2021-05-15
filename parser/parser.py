@@ -71,6 +71,7 @@ def preprocess(sentence):
     for word in word_list:
         if word.isalpha():
             continue
+        #removing any word that lisn't only letters.
         else:
             word_list.remove(word)
     return word_list

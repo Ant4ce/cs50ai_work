@@ -142,6 +142,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     prob_persons = [] 
     final_probab = 1
 
+    #looping over all individuals and adding to the list of probabilites.
     for person in people:
         our_prob_list = get_list_probab(people, one_gene, two_genes, person)
         if person in one_gene:
@@ -164,11 +165,13 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 probability_for_individual = our_prob_list[0][1] * our_prob_list[1][1]
                 prob_persons.append(prob_with_parents_and_trait(have_trait, probability_for_individual, person, 0))
 
+    #calculating the final probability based on the individual probabilities. 
     for every in prob_persons:
         final_probab = final_probab * every
 
     return final_probab
 
+#method for calculating the prob of individual who we know parents for and trait.
 def prob_with_parents_and_trait(have_trait, prob_indiv, person, num):
     value_prob = prob_indiv
     if person in have_trait:
@@ -178,6 +181,7 @@ def prob_with_parents_and_trait(have_trait, prob_indiv, person, num):
         
     return value_prob
 
+#method for calculating the prob of individual for who we know the trait.
 def prob_with_trait(have_trait, person, num):
     if person in have_trait:
         return PROBS["gene"][num] * PROBS["trait"][num][True]
@@ -208,6 +212,7 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
+    #updating the probabilities by adding joint probability p.
     for person in probabilities:
         if person in one_gene:
             probabilities[person]["gene"][1] += p 
@@ -241,9 +246,11 @@ def normalize(probabilities):
                 for boel in bool_list:
                     sum_list_trait.append(probabilities[person][typing][boel])
 
+        #getting the total for each type so we can normalize.
         sum_gene = sum(sum_list_gene)
         sum_trait = sum(sum_list_trait)
 
+        #updating the probabilities, normalizing them.
         for typing in type_list:
             if typing == "gene":
                 for num in num_list:

@@ -70,6 +70,7 @@ def load_data(data_dir):
         for file in os.scandir(directory):
             if file.path.endswith(".ppm"):
                 img = cv2.imread(file.path)
+                #can't use resize here from the numpy library have to use from cv2.
                 img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 labels_list.append(i)
@@ -86,23 +87,28 @@ def get_model():
     """
     model = tf.keras.models.Sequential([
 
+        #Convolutional and Pooling layer.
         tf.keras.layers.Conv2D(32, (3,3), activation="relu",input_shape=(IMG_WIDTH, IMG_HEIGHT,3)), 
         
         tf.keras.layers.MaxPooling2D(pool_size=(2,2)),
         
+        #Convolutional and Pooling layer.
         tf.keras.layers.Conv2D(32, (3,3), activation="relu",input_shape=(IMG_WIDTH, IMG_HEIGHT,3)), 
         
         tf.keras.layers.MaxPooling2D(pool_size=(2,2)),
         
+        #Flattening
         tf.keras.layers.Flatten(),
 
+        #3 hidden layers.
         tf.keras.layers.Dense(128, activation="relu"),
-        
         tf.keras.layers.Dense(128, activation="relu"),
         tf.keras.layers.Dense(128, activation="relu"),
 
+        #dropout rate of .5
         tf.keras.layers.Dropout(0.5),
         
+        #output layer.
         tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
         ])
 
