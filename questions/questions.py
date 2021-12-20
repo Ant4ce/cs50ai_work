@@ -1,8 +1,10 @@
 import nltk
+from nltk.corpus import stopwords
 import sys
 import os
 import string
 import numpy
+
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1

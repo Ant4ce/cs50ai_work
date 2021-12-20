@@ -132,7 +132,6 @@ def shortest_path(source, target):
             return node_list[::-1]
 
         node_neighbours = neighbors_for_person(node.state[1])
-
         #looping over neighbours if we didn't find a connection to the target yet.
         for every in node_neighbours:
             if every not in movie_people_seen:
@@ -140,7 +139,6 @@ def shortest_path(source, target):
                 action_new_number = node.action + 1 
                 node_current = Node(state = every, parent= node.state, action= action_new_number)
                 frontier.add(node_current)
-
 
 
 def person_id_for_name(name):

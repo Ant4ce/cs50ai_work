@@ -1,6 +1,7 @@
 import nltk
 import sys
 
+
 TERMINALS = """
 Adj -> "country" | "dreadful" | "enigmatical" | "little" | "moist" | "red"
 Adv -> "down" | "here" | "never"
